@@ -35,6 +35,19 @@ namespace Portmoneu.Api.Controllers
 
         }
 
+        [HttpPost]
+        [Route("api/add-customer")]
+        //no
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterCustomer(CustomerRegisterDTO customerRegisterDTO) {
+            try {
+                return Ok();
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
     }
 }
