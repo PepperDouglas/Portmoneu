@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portmoneu.Api", "Portmoneu\Portmoneu.Api.csproj", "{D9ED1E0E-2523-49FB-B194-EB77C68E1A32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portmoneu.Core", "Portmoneu.Core\Portmoneu.Core.csproj", "{E43D6952-40C0-4E59-B1E7-9C0B33A00F92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portmoneu.Data", "Portmoneu.Data\Portmoneu.Data.csproj", "{B7B26153-1786-4519-96CF-724B5CD2A41A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portmoneu.Models", "Portmoneu.Models\Portmoneu.Models.csproj", "{77C0778A-AF05-4EA4-882B-AA57820B0696}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9ED1E0E-2523-49FB-B194-EB77C68E1A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9ED1E0E-2523-49FB-B194-EB77C68E1A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9ED1E0E-2523-49FB-B194-EB77C68E1A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9ED1E0E-2523-49FB-B194-EB77C68E1A32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E43D6952-40C0-4E59-B1E7-9C0B33A00F92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E43D6952-40C0-4E59-B1E7-9C0B33A00F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E43D6952-40C0-4E59-B1E7-9C0B33A00F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E43D6952-40C0-4E59-B1E7-9C0B33A00F92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B26153-1786-4519-96CF-724B5CD2A41A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B26153-1786-4519-96CF-724B5CD2A41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B26153-1786-4519-96CF-724B5CD2A41A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B26153-1786-4519-96CF-724B5CD2A41A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77C0778A-AF05-4EA4-882B-AA57820B0696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77C0778A-AF05-4EA4-882B-AA57820B0696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77C0778A-AF05-4EA4-882B-AA57820B0696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77C0778A-AF05-4EA4-882B-AA57820B0696}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {208EFDD0-DB58-4427-B20A-A8E7A092C709}
+	EndGlobalSection
+EndGlobal
