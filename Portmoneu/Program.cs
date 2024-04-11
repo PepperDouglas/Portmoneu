@@ -1,7 +1,9 @@
 
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Core.Services;
 using Portmoneu.Data.Contexts;
@@ -11,6 +13,7 @@ using Portmoneu.Data.Repos;
 
 //using Portmoneu.Models.Contexts;
 using Portmoneu.Models.Identity;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +25,35 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = jwtSettings["Key"];
+
+builder.Services.AddAuthentication(opt => {
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+
+.AddJwtBearer(opt => {
+    opt.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey =
+         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+    };
+});
+
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+});
+
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUserRepo, UserRepo>();
+builder.Services.AddTransient<ICustomerRepo, CustomerRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 

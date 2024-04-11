@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Models.DTO;
+using Portmoneu.Models.Helpers;
 
 namespace Portmoneu.Api.Controllers
 {
@@ -32,7 +33,22 @@ namespace Portmoneu.Api.Controllers
             catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
+        }
 
+        [HttpPost]
+        [Route("api/login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UserLogin(UserCredentials credentials) {
+            try {
+                var result = await _userService.UserLogin(credentials);
+                if (result.Success) {
+                    return Ok(result.Data); //which is the token
+                }
+                return Unauthorized(result.Message);
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -41,13 +57,29 @@ namespace Portmoneu.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterCustomer(CustomerRegisterDTO customerRegisterDTO) {
             try {
-                return Ok();
+                var result = await _userService.RegisterCustomer(customerRegisterDTO);
+                if (result.Success) {
+                    return Ok(result.Data);
+                }
+                return BadRequest(result.Message);
             }
             catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
         }
 
+        [HttpGet]
+        [Route("api/tokentest")]
+        [Authorize(Policy = "RequireAdminRole")]
+        public async Task<IActionResult> DoesHaveValidAdminToken() {
+            var customerId = User.Claims.FirstOrDefault(c => c.Type == "CustomerId")?.Value;
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            if (User.IsInRole("Admin")) {
+                return Ok("You are an admin");
+
+            }
+            return Ok("You are not an admin, and should not be in here");
+        }
 
     }
 }

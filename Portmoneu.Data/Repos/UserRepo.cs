@@ -6,6 +6,7 @@ using Portmoneu.Models.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,6 +46,22 @@ namespace Portmoneu.Data.Repos
 
         public async Task<IdentityResult> AddRoleToUser(ApplicationUser user, string role) {
             return await _userManager.AddToRoleAsync(user, role);
+        }
+
+        public async Task<SignInResult> SignInTrial(string name, string password) {
+            return await _signInManager.PasswordSignInAsync(name, password, false, false);
+        }
+
+        public async Task<ICollection<Claim>> GetClaims(ApplicationUser user) {
+            return await _userManager.GetClaimsAsync(user);
+        }
+
+        public async Task<ICollection<string>> GetRoles(ApplicationUser user) {
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<ApplicationUser> GetUser(string username) {
+            return await _userManager.FindByNameAsync(username);
         }
     }
 }
