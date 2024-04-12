@@ -54,6 +54,8 @@ builder.Services.AddAuthorization(options => {
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUserRepo, UserRepo>();
 builder.Services.AddTransient<ICustomerRepo, CustomerRepo>();
+builder.Services.AddTransient<IAccountRepo, AccountRepo>();
+builder.Services.AddTransient<IDispositionRepo, DispositionRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 

@@ -54,7 +54,7 @@ namespace Portmoneu.Api.Controllers
         [HttpPost]
         [Route("api/add-customer")]
         //no
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> RegisterCustomer(CustomerRegisterDTO customerRegisterDTO) {
             try {
                 var result = await _userService.RegisterCustomer(customerRegisterDTO);

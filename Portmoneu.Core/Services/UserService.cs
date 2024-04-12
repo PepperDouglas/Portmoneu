@@ -21,11 +21,15 @@ namespace Portmoneu.Core.Services
         private readonly IUserRepo _userRepo;
         private readonly IMapper _mapper;
         private readonly ICustomerRepo _customerRepo;
+        private readonly IAccountRepo _accountRepo;
+        private readonly IDispositionRepo _dispositionRepo;
 
-        public UserService(IUserRepo userRepo, IMapper mapper, ICustomerRepo customerRepo) {
+        public UserService(IUserRepo userRepo, IMapper mapper, ICustomerRepo customerRepo, IAccountRepo accountRepo, IDispositionRepo dispositionRepo) {
             _userRepo = userRepo;
             _mapper = mapper;
             _customerRepo = customerRepo;
+            _accountRepo = accountRepo;
+            _dispositionRepo = dispositionRepo;
         }
 
         public async Task<ServiceResponse<AdminRegisterDTO>> RegisterAdmin(AdminRegisterDTO adminRegisterDTO) {
@@ -153,6 +157,41 @@ namespace Portmoneu.Core.Services
                     Message = "Could not attach 'User' role to new user"
                 };
             }
+
+            //1. create a bank account and relate it to a customer by saving details
+            //inside the disposition table OR
+            //2. create a bank account and add it to the (nav prop) of the customers
+            //dispositions;
+            //Method 1:
+            DateOnly createdDate = DateOnly.FromDateTime(DateTime.Now);
+            int accountTypesId = 1;
+            string frequency = "Monthly";
+            decimal balance = 0;
+            var account = new Account()
+            {
+                Frequency = frequency,
+                Balance = balance,
+                Created = createdDate,
+                AccountTypesId = accountTypesId,
+            };
+
+            //we try to save it down
+            await _accountRepo.CreateAccount(account);
+
+            //here is the difference, we save the Disp manually
+            //instead of attaching to and re-saving the customer
+            //we might need to also attach an account and customer
+            //directly, not only the ID's
+            //but in that case, we might as well use method 2
+            var disposition = new Disposition()
+            {
+                AccountId = account.AccountId,
+                CustomerId = customer.CustomerId,
+                Type = "OWNER"
+            };
+
+            await _dispositionRepo.RecordDispositionRelation(disposition);
+
 
             return new ServiceResponse<Customer>()
             {
