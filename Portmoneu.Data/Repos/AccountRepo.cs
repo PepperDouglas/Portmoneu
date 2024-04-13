@@ -1,4 +1,5 @@
-﻿using Portmoneu.Data.Contexts;
+﻿using Microsoft.EntityFrameworkCore;
+using Portmoneu.Data.Contexts;
 using Portmoneu.Data.Interfaces;
 using Portmoneu.Models.Entities;
 using System;
@@ -29,6 +30,15 @@ namespace Portmoneu.Data.Repos
         public async Task UpdateAccount(Account account) {
             _bankAppData.Accounts.Update(account);
             await _bankAppData.SaveChangesAsync();
+        }
+
+        public async Task<List<Account>> RetrieveAccounts(int customerId) {
+            return await _bankAppData.Dispositions
+                .Where(d => d.CustomerId == customerId)
+                .Include(d => d.Account)
+                    .ThenInclude(a => a.AccountTypes) // Include AccountType via Account
+                .Select(d => d.Account)
+                .ToListAsync();
         }
     }
 }

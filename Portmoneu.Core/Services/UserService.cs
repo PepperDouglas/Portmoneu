@@ -207,7 +207,7 @@ namespace Portmoneu.Core.Services
         }
 
         public async Task<ServiceResponse<Account>> AddNewAccount(NewAccountDTO newAccount, string customerId) {
-            //get the customer for that name
+            //get the customer for that name 
             var user = await _userRepo.GetUser(customerId);
 
             

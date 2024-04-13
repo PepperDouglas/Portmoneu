@@ -11,6 +11,7 @@ namespace Portmoneu.Data.Interfaces
     {
         Task CreateAccount(Account account);
         Task<Account> RetrieveAccount(int accountId);
+        Task<List<Account>> RetrieveAccounts(int customerId);
         Task UpdateAccount(Account account);
     }
 }
