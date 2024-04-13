@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace Portmoneu.Data.Interfaces
 {
-    public interface IAccountRepo
+    public interface ILoanRepo
     {
-        Task CreateAccount(Account account);
-        Task<Account> RetrieveAccount(int accountId);
-        Task UpdateAccount(Account account);
+        Task RegisterLoan(Loan loan);
     }
 }

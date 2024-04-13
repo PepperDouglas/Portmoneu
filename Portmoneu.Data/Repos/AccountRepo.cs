@@ -21,5 +21,14 @@ namespace Portmoneu.Data.Repos
             await _bankAppData.Accounts.AddAsync(account);
             await _bankAppData.SaveChangesAsync();
         }
+
+        public async Task<Account> RetrieveAccount(int accountId) {
+            return await _bankAppData.Accounts.FindAsync(accountId);
+        }
+
+        public async Task UpdateAccount(Account account) {
+            _bankAppData.Accounts.Update(account);
+            await _bankAppData.SaveChangesAsync();
+        }
     }
 }
