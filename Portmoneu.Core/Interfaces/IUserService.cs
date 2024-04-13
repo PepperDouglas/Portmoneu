@@ -14,5 +14,7 @@ namespace Portmoneu.Core.Interfaces
         Task<ServiceResponse<AdminRegisterDTO>> RegisterAdmin(AdminRegisterDTO adminRegisterDto);
         Task<ServiceResponse<Customer>> RegisterCustomer(CustomerRegisterDTO customerRegisterDTO);
         Task<ServiceResponse<string>> UserLogin(UserCredentials credentials);
+
+        Task<ServiceResponse<Account>> AddNewAccount(NewAccountDTO newAccount, string customerId);
     }
 }

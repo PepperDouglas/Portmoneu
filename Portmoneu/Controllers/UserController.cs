@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Models.DTO;
 using Portmoneu.Models.Helpers;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
 
 namespace Portmoneu.Api.Controllers
 {
@@ -67,6 +69,26 @@ namespace Portmoneu.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost]
+        [Route("api/add-account")]
+        [Authorize(Policy = "RequireUserRole")]
+        public async Task<IActionResult> RegisterNewAccount(NewAccountDTO newAccount) {
+            var customerid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            
+            if (customerid == null) {
+                return BadRequest("User identification not found");
+            }
+            try {
+                var result = await _userService.AddNewAccount(newAccount, customerid);
+                if (result.Success) { return Ok(result.Data); }
+                return BadRequest(result.Message);
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [HttpGet]
         [Route("api/tokentest")]

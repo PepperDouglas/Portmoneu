@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Data.Interfaces;
@@ -89,13 +90,17 @@ namespace Portmoneu.Core.Services
                 var userClaims = await _userRepo.GetClaims(user);
                 var userRoles = await _userRepo.GetRoles(user);
                 var roleClaims = userRoles.Select(role => new Claim(ClaimTypes.Role, role));
-                var claims = new List<Claim> { }
-                .Concat(userClaims).Concat(roleClaims); //creates claims from claims and roles
+                //var claims = new List<Claim> { }
+                //.Concat(userClaims).Concat(roleClaims); //creates claims from claims and roles
+                var claims = new List<Claim>(userClaims);
+                claims.AddRange(roleClaims);
                 //claims.Add(new Claim(ClaimTypes.Role, ))
                 //om någon av Rolesen är user, så måste ett customerID komma med
                 if (userRoles.Contains("User")) {
                     //add customerID to token here
-                    claims = claims.Append(new Claim("CustomerId", user.CustomerId.ToString())).ToList();
+                    //int id = (int)user.CustomerId;
+                    claims.Add(new Claim("CustomerId", user.CustomerId.ToString()));
+                    //claims = claims.Append(new Claim("CustomerId", user.CustomerId.ToString())).ToList();
                 } else if (userRoles.Contains("Admin")) {
                     string testpurpose = "role cna be checked";
                     Console.WriteLine(testpurpose);
@@ -198,6 +203,53 @@ namespace Portmoneu.Core.Services
                 Message = "New 'User' user added",
                 Success = true,
                 Data = customer
+            };
+        }
+
+        public async Task<ServiceResponse<Account>> AddNewAccount(NewAccountDTO newAccount, string customerId) {
+            //get the customer for that name
+            var user = await _userRepo.GetUser(customerId);
+
+            
+            //konvertera string till int
+            int customerID = (int)user.CustomerId;
+
+            
+
+            //hämta ned valid account types, temporär lösning
+            if (newAccount.accountTypeId < 1 || newAccount.accountTypeId > 2) {
+                throw new Exception("Not a valid account type");
+            }
+            
+            //lägg till kontot, få id
+            var account = _mapper.Map<Account>(newAccount);
+            account.Created = DateOnly.FromDateTime(DateTime.Now);
+            account.Balance = 0;
+            await _accountRepo.CreateAccount(account);
+
+            //hämta customern
+            var customer = await _customerRepo.GetCustomer(customerID);
+
+            //skapa upp en disposition
+            var disposition = new Disposition()
+            {
+                Type = "OWNER",
+                CustomerId = customerID,
+                AccountId = account.AccountId
+            };
+
+
+            //lägg till disposition på customer (metod 2)
+            customer.Dispositions.Add(disposition);
+
+            //spara kunden igen
+            await _customerRepo.UpdateCustomer(customer);
+
+            return new ServiceResponse<Account>()
+            {
+                Message = "New account added",
+                Success = true,
+                Data = account
             };
         }
 

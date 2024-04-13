@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Core.Services;
@@ -49,6 +50,7 @@ builder.Services.AddAuthentication(opt => {
 
 builder.Services.AddAuthorization(options => {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("RequireUserRole", policy => policy.RequireRole("User"));
 });
 
 builder.Services.AddTransient<IUserService, UserService>();
