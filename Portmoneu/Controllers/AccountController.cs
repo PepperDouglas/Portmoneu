@@ -38,6 +38,27 @@ namespace Portmoneu.Api.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/account-details-transactions{accountid}")]
+        [Authorize(Policy = "RequireUserRole")]
+        public async Task<IActionResult> GetAccountTransactionDetails(int accountid) {
+            
+            var customer = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            if (customer == null) {
+                return BadRequest("Invalid token");
+            }
+            try {
+                var result = await _accountService.GetTransactionDetails(accountid, customer);
+                if (result.Success) {
+                    return Ok(result.Data);
+                }
+                return BadRequest(result.Message);
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         [Route("api/transfer")]
         [Authorize(Policy = "RequireUserRole")]

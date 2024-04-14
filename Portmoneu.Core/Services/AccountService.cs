@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace Portmoneu.Core.Services
 {
-    public class AccountService : IAccountService
-    {
+    public class AccountService : IAccountService {
         private readonly IAccountRepo _accountRepo;
         private readonly ICustomerRepo _customerRepo;
         private readonly IUserRepo _userRepo;
@@ -30,9 +29,9 @@ namespace Portmoneu.Core.Services
 
         public async Task<ServiceResponse<List<AccountOutDTO>>> RetrieveAccounts(string customer) {
             var user = await _userRepo.GetUser(customer) ?? throw new Exception("Invalid customer validation");
-            var accounts =  await _accountRepo.RetrieveAccounts((int)user.CustomerId);
+            var accounts = await _accountRepo.RetrieveAccounts((int)user.CustomerId);
             if (accounts.Count == 0) {
-                return new ServiceResponse<List<AccountOutDTO>> { 
+                return new ServiceResponse<List<AccountOutDTO>> {
                     Success = false,
                     Message = "No accounts found"
                 };
@@ -50,7 +49,7 @@ namespace Portmoneu.Core.Services
             //get all types of accounts
             //for loop where they are bound
             //instead of 2TWO requests, we now included the types in the first req
-            
+
 
             return new ServiceResponse<List<AccountOutDTO>>()
             {
@@ -60,6 +59,26 @@ namespace Portmoneu.Core.Services
             };
 
         }
+
+        public async Task<ServiceResponse<List<Transaction>>> GetTransactionDetails(int accountid, string customername) {
+            var user = await _userRepo.GetUser(customername);
+            var userAccounts = await _accountRepo.RetrieveAccounts((int)user.CustomerId);
+            if (userAccounts.Count == 0) {
+                throw new Exception("No available accounts");
+            }
+            var relevantAccount = userAccounts.FirstOrDefault(acc => acc.AccountId == accountid);
+            if (relevantAccount == null) {
+                throw new Exception("Not account of user");
+            }
+            var transactionDetails = await _transactionRepo.RetrieveTransactionsForAccount(accountid);
+            return new ServiceResponse<List<Transaction>>
+            {
+                Success = true,
+                Message = "",
+                Data = transactionDetails
+            };
+        }
+        
 
         public async Task<ServiceResponse<TransactionDTO>> CreateTransaction(TransactionDTO transactionDto, string username) {
             if (transactionDto.SenderAccount == transactionDto.RecieverAccount) {
