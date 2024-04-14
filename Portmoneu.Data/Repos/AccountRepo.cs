@@ -32,6 +32,10 @@ namespace Portmoneu.Data.Repos
             await _bankAppData.SaveChangesAsync();
         }
 
+        public void AwaitUpdateAccount(Account account) {
+            _bankAppData.Accounts.Update(account);
+        }
+
         public async Task<List<Account>> RetrieveAccounts(int customerId) {
             return await _bankAppData.Dispositions
                 .Where(d => d.CustomerId == customerId)

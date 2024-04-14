@@ -18,12 +18,14 @@ namespace Portmoneu.Core.Services
         private readonly ICustomerRepo _customerRepo;
         private readonly IUserRepo _userRepo;
         private readonly IMapper _mapper;
+        private readonly ITransactionRepo _transactionRepo;
 
-        public AccountService(IAccountRepo accountRepo, ICustomerRepo customerRepo, IUserRepo userRepo, IMapper mapper) {
+        public AccountService(IAccountRepo accountRepo, ICustomerRepo customerRepo, IUserRepo userRepo, IMapper mapper, ITransactionRepo transactionRepo) {
             _accountRepo = accountRepo;
             _customerRepo = customerRepo;
             _userRepo = userRepo;
             _mapper = mapper;
+            _transactionRepo = transactionRepo;
         }
 
         public async Task<ServiceResponse<List<AccountOutDTO>>> RetrieveAccounts(string customer) {
@@ -57,6 +59,72 @@ namespace Portmoneu.Core.Services
                 Data = accountsOut
             };
 
+        }
+
+        public async Task<ServiceResponse<TransactionDTO>> CreateTransaction(TransactionDTO transactionDto, string username) {
+            if (transactionDto.SenderAccount == transactionDto.RecieverAccount) {
+                throw new Exception("Cannot handle transaction");
+            }
+            //get customer from user
+            var user = await _userRepo.GetUser(username);
+            //check if is own account (get all accounts, see if one of them matches the accountID)
+            var userAccounts = await _accountRepo.RetrieveAccounts((int)user.CustomerId);
+            if (userAccounts.Count == 0) {
+                return new ServiceResponse<TransactionDTO>
+                {
+                    Success = false,
+                    Message = "No accounts available"
+                };
+            }
+            var actorAccount = userAccounts.FirstOrDefault(acc => acc.AccountId == transactionDto.SenderAccount);
+            var recieverAccount = await _accountRepo.RetrieveAccount(transactionDto.RecieverAccount);
+            string isFoundMessage = recieverAccount == null ? "Reciever could not be found" : "Your account could not be found";
+            if (actorAccount == null || recieverAccount == null) {
+                return new ServiceResponse<TransactionDTO>
+                {
+                    Success = false,
+                    Message = isFoundMessage
+                };
+            }
+            //get relevant account
+            //var actorAccount = userAccounts.FirstOrDefault(a => a.AccountId == transactionDto.SenderAccount);
+            //remove money from that account
+            if (actorAccount.Balance >= transactionDto.Amount) {
+                actorAccount.Balance -= transactionDto.Amount;
+                recieverAccount.Balance += transactionDto.Amount;
+            } else {
+                return new ServiceResponse<TransactionDTO>
+                {
+                    Success = false,
+                    Message = "Not enough credit on this account"
+                };
+            }
+            //these changes only updates but doesnt save the account
+            //save it
+            _accountRepo.AwaitUpdateAccount(actorAccount);
+            //get the account being sent to
+            //update it
+            //save it
+            _accountRepo.AwaitUpdateAccount(recieverAccount);
+            //REMAINING MONEYT
+            var moneyOne = actorAccount.Balance;
+            //create a map of the Transaction
+            var transaction = _mapper.Map<Transaction>(transactionDto);
+            //add manual things
+            transaction.Date = DateOnly.FromDateTime(DateTime.Now);
+            transaction.Operation = "Transfer";
+            transaction.Type = "Debit";
+            transaction.Amount = transaction.Amount * (-1); 
+            transaction.Balance = moneyOne;
+            
+            //save the transaction
+            await _transactionRepo.CreateTransaction(transaction);
+            return new ServiceResponse<TransactionDTO>
+            {
+                Success = true,
+                Message = "Transaction successful",
+                Data = transactionDto
+            };
         }
     }
 }

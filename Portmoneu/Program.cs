@@ -61,6 +61,7 @@ builder.Services.AddTransient<IDispositionRepo, DispositionRepo>();
 builder.Services.AddTransient<ILoanRepo, LoanRepo>();
 builder.Services.AddTransient<ILoanService, LoanService>();
 builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<ITransactionRepo, TransactionRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 

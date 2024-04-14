@@ -11,6 +11,7 @@ namespace Portmoneu.Core.Interfaces
 {
     public interface IAccountService
     {
+        Task<ServiceResponse<TransactionDTO>> CreateTransaction(TransactionDTO transactionDto, string username);
         Task<ServiceResponse<List<AccountOutDTO>>> RetrieveAccounts(string customer);
     }
 }
