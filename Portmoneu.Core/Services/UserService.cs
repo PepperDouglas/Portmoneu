@@ -24,13 +24,15 @@ namespace Portmoneu.Core.Services
         private readonly ICustomerRepo _customerRepo;
         private readonly IAccountRepo _accountRepo;
         private readonly IDispositionRepo _dispositionRepo;
+        private readonly IAccountTypeRepo _accountTypeRepo;
 
-        public UserService(IUserRepo userRepo, IMapper mapper, ICustomerRepo customerRepo, IAccountRepo accountRepo, IDispositionRepo dispositionRepo) {
+        public UserService(IUserRepo userRepo, IMapper mapper, ICustomerRepo customerRepo, IAccountRepo accountRepo, IDispositionRepo dispositionRepo, IAccountTypeRepo accountTypeRepo) {
             _userRepo = userRepo;
             _mapper = mapper;
             _customerRepo = customerRepo;
             _accountRepo = accountRepo;
             _dispositionRepo = dispositionRepo;
+            _accountTypeRepo = accountTypeRepo;
         }
 
         public async Task<ServiceResponse<AdminRegisterDTO>> RegisterAdmin(AdminRegisterDTO adminRegisterDTO) {
@@ -223,10 +225,12 @@ namespace Portmoneu.Core.Services
 
             
 
-            //hämta ned valid account types, temporär lösning
-            if (newAccount.accountTypeId < 1 || newAccount.accountTypeId > 2) {
+            //Here we can check if the user is allowed to create such an account
+            var validAccountTypes = await _accountTypeRepo.GetAllAccountTypes();
+            if (!validAccountTypes.Any(acc => acc.AccountTypeId == newAccount.accountTypeId)) {
                 throw new Exception("Not a valid account type");
             }
+            
             
             //lägg till kontot, få id
             var account = _mapper.Map<Account>(newAccount);

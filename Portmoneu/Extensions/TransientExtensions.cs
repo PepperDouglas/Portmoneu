@@ -17,6 +17,7 @@ namespace Portmoneu.Api.Extensions
             services.AddTransient<ILoanService, LoanService>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<ITransactionRepo, TransactionRepo>();
+            services.AddTransient<IAccountTypeRepo, AccountTypeRepo>();
             return services;
         }
     }

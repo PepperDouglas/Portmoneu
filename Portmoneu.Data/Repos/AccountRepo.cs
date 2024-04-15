@@ -40,7 +40,7 @@ namespace Portmoneu.Data.Repos
             return await _bankAppData.Dispositions
                 .Where(d => d.CustomerId == customerId)
                 .Include(d => d.Account)
-                    .ThenInclude(a => a.AccountTypes) // Include AccountType via Account
+                    .ThenInclude(a => a.AccountTypes)
                 .Select(d => d.Account)
                 .ToListAsync();
         }
