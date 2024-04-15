@@ -18,6 +18,11 @@ namespace Portmoneu.Api.Controllers
             _accountService = accountService;
         }
 
+        /// <summary>
+        /// Lists accounts for the logged customer
+        /// </summary>
+        /// <remarks>User role required</remarks>
+        /// <returns>A list of user Accounts in abridged form</returns>
         [HttpGet]
         [Route("api/account-details")]
         [Authorize(Policy = "RequireUserRole")]
@@ -38,6 +43,12 @@ namespace Portmoneu.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets transaction details for a single account
+        /// </summary>
+        /// <remarks>Can only return details if it's the logged customer's account</remarks>
+        /// <param name="accountid"></param>
+        /// <returns>A list of transaction details</returns>
         [HttpGet]
         [Route("api/account-details-transactions{accountid}")]
         [Authorize(Policy = "RequireUserRole")]
@@ -59,6 +70,12 @@ namespace Portmoneu.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Transfers money between accounts
+        /// </summary>
+        /// <remarks>User role required</remarks>
+        /// <param name="transactionDTO"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/transfer")]
         [Authorize(Policy = "RequireUserRole")]

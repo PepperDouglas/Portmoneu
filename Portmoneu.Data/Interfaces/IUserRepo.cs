@@ -22,5 +22,6 @@ namespace Portmoneu.Data.Interfaces
         Task<ICollection<string>> GetRoles(ApplicationUser user);
         Task<ICollection<Claim>> GetClaims(ApplicationUser user);
         Task<ApplicationUser> GetUser(string username);
+        Task<bool> doesUserExist(string username);
     }
 }

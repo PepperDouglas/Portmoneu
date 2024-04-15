@@ -63,5 +63,10 @@ namespace Portmoneu.Data.Repos
         public async Task<ApplicationUser> GetUser(string username) {
             return await _userManager.FindByNameAsync(username);
         }
+
+        public async Task<bool> doesUserExist(string username) {
+            var user = await _userManager.FindByNameAsync(username);
+            return user != null;
+        }
     }
 }

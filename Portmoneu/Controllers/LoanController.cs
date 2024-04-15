@@ -19,6 +19,13 @@ namespace Portmoneu.Api.Controllers
             _loanService = loanService;
         }
 
+
+        /// <summary>
+        /// Gives a loan to a Customer
+        /// </summary>
+        /// <remarks>Admin role required</remarks>
+        /// <param name="loanDTO"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/set-loan")]
         [Authorize(Policy = "RequireAdminRole")]

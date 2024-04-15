@@ -135,6 +135,13 @@ namespace Portmoneu.Core.Services
         }
 
         public async Task<ServiceResponse<Customer>> RegisterCustomer(CustomerRegisterDTO customerRegisterDTO) {
+            //Here we need to check that the alias does not exist already, very important
+            bool userAliasExists = await _userRepo.UserExists(customerRegisterDTO.Alias);
+            if (userAliasExists) {
+                throw new Exception("User alias already exists");
+            }
+
+
             //vi måste mappa till customer och registrera
             var customer = _mapper.Map<Customer>(customerRegisterDTO);
             await _customerRepo.RegisterCustomer(customer); //nu ska den ha id

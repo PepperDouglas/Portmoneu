@@ -20,10 +20,15 @@ namespace Portmoneu.Api.Controllers
             _userService = userService;
         }
 
-        //temporary test api route
+        /// <summary>
+        /// Adding admins
+        /// </summary>
+        /// <remarks>Admin role needed</remarks>
+        /// <param name="adminRegisterDTO"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/add-admin")]
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> RegisterAdmin(AdminRegisterDTO adminRegisterDTO) {
             try {
                 var result = await _userService.RegisterAdmin(adminRegisterDTO);
@@ -41,6 +46,10 @@ namespace Portmoneu.Api.Controllers
         [Route("api/login")]
         [AllowAnonymous]
         public async Task<IActionResult> UserLogin(UserCredentials credentials) {
+            var customerid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            if (customerid != null) { 
+                return BadRequest("Please log out to log in");
+            }
             try {
                 var result = await _userService.UserLogin(credentials);
                 if (result.Success) {
@@ -53,9 +62,29 @@ namespace Portmoneu.Api.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/logout")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UserLogout() {  
+            Response.Cookies.Append(".AspNetCore.Identity.Application", "", new CookieOptions { Expires = DateTime.UtcNow.AddDays(-1) });
+
+            return RedirectToAction("LogoutAction", "User");
+        }
+
+        [HttpGet]
+        [Route("api/logged-out-message")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LogoutAction() {
+            return Ok("You are now logged out");
+        }
+
+        /// <summary>
+        /// Add new Customer and User
+        /// </summary>
+        /// <param name="customerRegisterDTO"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/add-customer")]
-        //no
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> RegisterCustomer(CustomerRegisterDTO customerRegisterDTO) {
             try {
@@ -70,6 +99,12 @@ namespace Portmoneu.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Adds an account to a Customer
+        /// </summary>
+        /// <remarks>User role required</remarks>
+        /// <param name="newAccount"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/add-account")]
         [Authorize(Policy = "RequireUserRole")]
@@ -89,7 +124,10 @@ namespace Portmoneu.Api.Controllers
             }
         }
 
-
+        /// <summary>
+        /// For testing purposes only
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("api/tokentest")]
         [Authorize(Policy = "RequireAdminRole")]

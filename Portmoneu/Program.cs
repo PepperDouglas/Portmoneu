@@ -1,71 +1,38 @@
-
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Portmoneu.Api.Extensions;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Core.Services;
 using Portmoneu.Data.Contexts;
 using Portmoneu.Data.Interfaces;
 using Portmoneu.Data.Repos;
-
-
-//using Portmoneu.Models.Contexts;
 using Portmoneu.Models.Identity;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options => {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-    });
+builder.Services.AddControllerExtended();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = jwtSettings["Key"];
 
-builder.Services.AddAuthentication(opt => {
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-
-.AddJwtBearer(opt => {
-    opt.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey =
-         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
-    };
-});
+builder.Services.AddAuthenticationExtended(jwtSettings, key);
 
 builder.Services.AddAuthorization(options => {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
     options.AddPolicy("RequireUserRole", policy => policy.RequireRole("User"));
 });
 
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IUserRepo, UserRepo>();
-builder.Services.AddTransient<ICustomerRepo, CustomerRepo>();
-builder.Services.AddTransient<IAccountRepo, AccountRepo>();
-builder.Services.AddTransient<IDispositionRepo, DispositionRepo>();
-builder.Services.AddTransient<ILoanRepo, LoanRepo>();
-builder.Services.AddTransient<ILoanService, LoanService>();
-builder.Services.AddTransient<IAccountService, AccountService>();
-builder.Services.AddTransient<ITransactionRepo, TransactionRepo>();
+builder.Services.AddTransientExtended();
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerExtended();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -82,7 +49,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-
 var app = builder.Build();
 
 app.UseRouting();
@@ -94,8 +60,5 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapGet("/", () => "Loading works");
-
-
-
 
 app.Run();
