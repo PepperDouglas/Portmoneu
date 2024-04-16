@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Portmoneu.Core.Interfaces;
 using Portmoneu.Models.DTO;
 using Portmoneu.Models.Helpers;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace Portmoneu.Api.Controllers

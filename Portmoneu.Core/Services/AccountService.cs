@@ -4,24 +4,17 @@ using Portmoneu.Data.Interfaces;
 using Portmoneu.Models.DTO;
 using Portmoneu.Models.Entities;
 using Portmoneu.Models.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Portmoneu.Core.Services
 {
     public class AccountService : IAccountService {
         private readonly IAccountRepo _accountRepo;
-        private readonly ICustomerRepo _customerRepo;
         private readonly IUserRepo _userRepo;
         private readonly IMapper _mapper;
         private readonly ITransactionRepo _transactionRepo;
 
-        public AccountService(IAccountRepo accountRepo, ICustomerRepo customerRepo, IUserRepo userRepo, IMapper mapper, ITransactionRepo transactionRepo) {
+        public AccountService(IAccountRepo accountRepo, IUserRepo userRepo, IMapper mapper, ITransactionRepo transactionRepo) {
             _accountRepo = accountRepo;
-            _customerRepo = customerRepo;
             _userRepo = userRepo;
             _mapper = mapper;
             _transactionRepo = transactionRepo;
@@ -36,7 +29,7 @@ namespace Portmoneu.Core.Services
                     Message = "No accounts found"
                 };
             }
-            //var accountsOut = _mapper.Map<List<AccountOutDTO>>(accounts);
+            
             List<AccountOutDTO> accountsOut = new List<AccountOutDTO>();
             accounts.ForEach(account => {
                 if (account.AccountTypes == null) {
@@ -46,11 +39,7 @@ namespace Portmoneu.Core.Services
                 AccountOutDTO acc = new AccountOutDTO(accountType, account.Balance);
                 accountsOut.Add(acc);
             });
-            //get all types of accounts
-            //for loop where they are bound
-            //instead of 2TWO requests, we now included the types in the first req
-
-
+  
             return new ServiceResponse<List<AccountOutDTO>>()
             {
                 Success = true,
@@ -84,9 +73,9 @@ namespace Portmoneu.Core.Services
             if (transactionDto.SenderAccount == transactionDto.RecieverAccount) {
                 throw new Exception("Cannot handle transaction");
             }
-            //get customer from user
+            
             var user = await _userRepo.GetUser(username);
-            //check if is own account (get all accounts, see if one of them matches the accountID)
+            
             var userAccounts = await _accountRepo.RetrieveAccounts((int)user.CustomerId);
             if (userAccounts.Count == 0) {
                 return new ServiceResponse<TransactionDTO>
@@ -105,9 +94,7 @@ namespace Portmoneu.Core.Services
                     Message = isFoundMessage
                 };
             }
-            //get relevant account
-            //var actorAccount = userAccounts.FirstOrDefault(a => a.AccountId == transactionDto.SenderAccount);
-            //remove money from that account
+            
             if (actorAccount.Balance >= transactionDto.Amount) {
                 actorAccount.Balance -= transactionDto.Amount;
                 recieverAccount.Balance += transactionDto.Amount;
@@ -118,18 +105,14 @@ namespace Portmoneu.Core.Services
                     Message = "Not enough credit on this account"
                 };
             }
-            //these changes only updates but doesnt save the account
-            //save it
+            
+            //start tracking, but does not save
             _accountRepo.AwaitUpdateAccount(actorAccount);
-            //get the account being sent to
-            //update it
-            //save it
             _accountRepo.AwaitUpdateAccount(recieverAccount);
-            //REMAINING MONEYT
+            
             var moneyOne = actorAccount.Balance;
-            //create a map of the Transaction
+            
             var transaction = _mapper.Map<Transaction>(transactionDto);
-            //add manual things
             transaction.Date = DateOnly.FromDateTime(DateTime.Now);
             transaction.Operation = "Transfer";
             transaction.Type = "Debit";

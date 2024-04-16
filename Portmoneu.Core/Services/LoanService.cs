@@ -4,11 +4,6 @@ using Portmoneu.Data.Interfaces;
 using Portmoneu.Models.DTO;
 using Portmoneu.Models.Entities;
 using Portmoneu.Models.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Portmoneu.Core.Services
 {
@@ -33,7 +28,7 @@ namespace Portmoneu.Core.Services
                     Data = newLoan
                 };
             }
-            //map the loan
+            
             var loan = _mapper.Map<Loan>(newLoan);
             loan.Status = "Running";
             loan.Date = DateOnly.FromDateTime(DateTime.Now);
@@ -41,7 +36,6 @@ namespace Portmoneu.Core.Services
 
             await _loanRepo.RegisterLoan(loan);
 
-            //update use account
             account.Balance += newLoan.Amount;
 
             await _accountRepo.UpdateAccount(account);

@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portmoneu.Core.Interfaces;
-using Portmoneu.Data.Interfaces;
 using Portmoneu.Models.DTO;
 
 namespace Portmoneu.Api.Controllers
@@ -18,7 +15,6 @@ namespace Portmoneu.Api.Controllers
         public LoanController(ILoanService loanService) {
             _loanService = loanService;
         }
-
 
         /// <summary>
         /// Gives a loan to a Customer

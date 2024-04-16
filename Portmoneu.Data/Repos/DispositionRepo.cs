@@ -1,11 +1,6 @@
 ﻿using Portmoneu.Data.Contexts;
 using Portmoneu.Data.Interfaces;
 using Portmoneu.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Portmoneu.Data.Repos
 {

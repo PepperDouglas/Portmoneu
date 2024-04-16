@@ -6,7 +6,6 @@ namespace Portmoneu.Api.Extensions
     {
         public static IServiceCollection AddSwaggerExtended(this IServiceCollection services) {
             services.AddSwaggerGen(c => {
-                // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);

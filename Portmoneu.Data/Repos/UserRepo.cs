@@ -3,12 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Portmoneu.Data.Contexts;
 using Portmoneu.Data.Interfaces;
 using Portmoneu.Models.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Portmoneu.Data.Repos
 {
@@ -17,8 +12,6 @@ namespace Portmoneu.Data.Repos
         private readonly ApplicationDbContext _ciContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        //next line should probably be in a different repo, if its not
-        //ApplicationUser, but ApplicationRole or something
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public UserRepo(ApplicationDbContext ciContext, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager) {

@@ -1,18 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Portmoneu.Api.Extensions;
-using Portmoneu.Core.Interfaces;
-using Portmoneu.Core.Services;
 using Portmoneu.Data.Contexts;
-using Portmoneu.Data.Interfaces;
-using Portmoneu.Data.Repos;
 using Portmoneu.Models.Identity;
-using System.Reflection;
-using System.Text;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +33,6 @@ options.UseSqlServer
 builder.Services.AddDbContext<BankAppData>(options =>
 options.UseSqlServer
 (builder.Configuration.GetConnectionString("BankAppData")));
-
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
