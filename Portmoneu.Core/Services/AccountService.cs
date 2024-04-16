@@ -111,16 +111,28 @@ namespace Portmoneu.Core.Services
             _accountRepo.AwaitUpdateAccount(recieverAccount);
             
             var moneyOne = actorAccount.Balance;
-            
+            var dateOfTransfer = DateOnly.FromDateTime(DateTime.Now);
+
             var transaction = _mapper.Map<Transaction>(transactionDto);
-            transaction.Date = DateOnly.FromDateTime(DateTime.Now);
+            transaction.Date = dateOfTransfer;
             transaction.Operation = "Transfer";
             transaction.Type = "Debit";
             transaction.Amount = transaction.Amount * (-1); 
             transaction.Balance = moneyOne;
-            
-            //save the transaction
-            await _transactionRepo.CreateTransaction(transaction);
+
+            //here we create another transaction
+            var recTransaction = new Transaction
+            {
+                AccountId = transactionDto.RecieverAccount,
+                Date = dateOfTransfer,
+                Operation = "Transfer",
+                Type = "Credit",
+                Amount = transaction.Amount * (-1),
+                Balance = recieverAccount.Balance,
+                Account = transactionDto.SenderAccount.ToString()
+            };
+            //save both of the transactions
+            await _transactionRepo.CreateTransaction(transaction, recTransaction);
             return new ServiceResponse<TransactionDTO>
             {
                 Success = true,

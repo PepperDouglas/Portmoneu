@@ -12,8 +12,9 @@ namespace Portmoneu.Data.Repos
             _bankAppData = bankAppData;
         }
 
-        public async Task CreateTransaction(Models.Entities.Transaction transaction) {
+        public async Task CreateTransaction(Models.Entities.Transaction transaction, Models.Entities.Transaction recTransaction) {
             await _bankAppData.Transactions.AddAsync(transaction);
+            await _bankAppData.Transactions.AddAsync(recTransaction);
             await _bankAppData.SaveChangesAsync();
         }
 
